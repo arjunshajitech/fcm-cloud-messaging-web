@@ -1,8 +1,11 @@
-import { initializeApp } from "firebase/app";
-import { getMessaging } from "firebase/messaging/sw";
-import { onBackgroundMessage } from "firebase/messaging/sw";
-
-const firebaseApp = initializeApp({
+importScripts(
+    "https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"
+  );
+  importScripts(
+    "https://www.gstatic.com/firebasejs/9.1.0/firebase-messaging-compat.js"
+  );
+  
+  const firebaseConfig = {
     apiKey: "AIzaSyBz_HyeCkyon5QLeXV0EZW3-GYs2o2i7zE",
     authDomain: "test-notification-662a3.firebaseapp.com",
     projectId: "test-notification-662a3",
@@ -10,18 +13,30 @@ const firebaseApp = initializeApp({
     messagingSenderId: "662274289477",
     appId: "1:662274289477:web:cabcd9b08360e1331cd82c",
     measurementId: "G-SXJNH86HEK"
-});
-
-const messaging = getMessaging(firebaseApp);
-onBackgroundMessage(messaging, (payload) => {
+  };
   
+  firebase.initializeApp(firebaseConfig);
+  
+  const messaging = firebase.messaging();
+  
+  messaging.onBackgroundMessage((payload) => {
     const { body } = payload.notification;
-    const { title } = payload.notification;
+    const title = "Joshua's App";
+  
     const notificationOptions = {
-        body,
-        icon: "",
+      body,
+      icon: "https://cdn-icons-png.flaticon.com/512/785/785116.png",
     };
-    const notification = new Notification(title, notificationOptions);
-
-    self.registration.showNotification(notificationTitle,notificationOptions);
-});
+  
+    return self.registration.showNotification(title, notificationOptions);
+  });
+  
+  self.addEventListener("notificationclick", (event) => {
+    const clickedNotification = event.notification;
+    clickedNotification.close();
+    console.log("Notification Clicked");
+  });
+  
+  self.addEventListener("notificationclose", (event) => {
+    console.log("Notification Closed");
+  });
